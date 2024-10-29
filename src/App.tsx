@@ -7,8 +7,12 @@ function App() {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>Кнопка</Button>
-      <TestDialog open={isOpen} onClose={() => setIsOpen(false)} />
+      <Button onClick={() => setIsOpen(true)}>Открыть диалог</Button>
+      <TestDialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        onDataSubmit={(data) => console.log(data)}
+      />
     </>
   );
 }

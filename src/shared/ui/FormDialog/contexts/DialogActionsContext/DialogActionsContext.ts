@@ -1,8 +1,5 @@
-import { createContext, Dispatch, ReactNode, SetStateAction } from "react";
-
-export type DialogActionsContextValue = {
-  setActionsNode?: Dispatch<SetStateAction<ReactNode>>;
-};
+import { createContext } from "react";
+import { DialogActionsContextValue } from "./DialogActionsContextValue.ts";
 
 /**
  * @private Контекст для внедрения панели действий

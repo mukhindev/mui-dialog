@@ -1,9 +1,12 @@
-import { DialogActionsContext } from "../../contexts/DialogActionsContext";
 import { ReactNode, useMemo, useState } from "react";
 import {
   DialogActions as MuiDialogActions,
   DialogContent as MuiDialogContent,
 } from "@mui/material";
+import {
+  DialogActionsProvider,
+  DialogActionsContextValue,
+} from "../../contexts/DialogActionsContext";
 
 /**
  * @private Тело диалога с возможностью внедрять панель действий
@@ -14,14 +17,16 @@ export default function DialogBody(props: { children: ReactNode }) {
 
   const [actionsNode, setActionsNode] = useState<ReactNode>();
 
-  const actionsContextValue = useMemo(() => {
+  const dialogActionsContextValue = useMemo<DialogActionsContextValue>(() => {
     return { setActionsNode };
   }, []);
 
   return (
-    <DialogActionsContext.Provider value={actionsContextValue}>
-      <MuiDialogContent>{children}</MuiDialogContent>
-      {actionsNode && <MuiDialogActions>{actionsNode}</MuiDialogActions>}
-    </DialogActionsContext.Provider>
+    <DialogActionsProvider value={dialogActionsContextValue}>
+      <MuiDialogContent sx={{ p: 2 }}>{children}</MuiDialogContent>
+      {actionsNode && (
+        <MuiDialogActions sx={{ p: 2 }}>{actionsNode}</MuiDialogActions>
+      )}
+    </DialogActionsProvider>
   );
 }

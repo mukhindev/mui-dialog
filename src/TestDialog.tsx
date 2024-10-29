@@ -1,21 +1,63 @@
-import Dialog, { DialogProps, DialogActions } from "./shared/ui/FormDialog";
+import { useFormContext } from "react-hook-form";
+import {
+  DialogActions,
+  FormDialog,
+  useDialog,
+  FormDialogProps,
+} from "./shared/ui/FormDialog";
+import { Button, TextField } from "@mui/material";
 
-export default function TestDialog(props: DialogProps) {
-  const { ...dialogProps } = props;
+type Model = {
+  name: string;
+};
+
+export default function TestDialog(props: FormDialogProps<Model>) {
+  const { ...formDialogProps } = props;
 
   return (
-    <Dialog form title="Тестовый диалог" {...dialogProps}>
+    <FormDialog
+      title="Тестовый диалог"
+      formParams={{
+        defaultValues: {
+          name: "Sergey Mukhin",
+        },
+      }}
+      {...formDialogProps}
+    >
       <TestDialogContent />
-    </Dialog>
+    </FormDialog>
   );
 }
 
 function TestDialogContent() {
+  const { register, getValues } = useFormContext<Model>();
+  const dialog = useDialog<Model>();
+
   return (
     <>
-      <input />
+      <TextField {...register("name")} label="Имя" fullWidth />
       <DialogActions>
-        <button type="submit">Отправить</button>
+        <Button
+          type="button"
+          variant="contained"
+          color="inherit"
+          onClick={dialog.cancel}
+        >
+          Отмена
+        </Button>
+        <Button
+          type="button"
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            dialog.submitData?.(getValues());
+          }}
+        >
+          Метод submitData
+        </Button>
+        <Button type="submit" variant="contained" color="primary">
+          Форма
+        </Button>
       </DialogActions>
     </>
   );

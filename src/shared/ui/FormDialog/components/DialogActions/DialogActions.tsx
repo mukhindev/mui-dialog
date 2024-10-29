@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from "react";
-import { useFormDialogActions } from "../../contexts/DialogActionsContext";
+import { useDialogActions } from "../../contexts/DialogActionsContext";
 
 interface DialogActionsProps {
   children: ReactNode;
@@ -35,7 +35,7 @@ interface DialogActionsProps {
  * */
 export default function DialogActions(props: DialogActionsProps) {
   const { children } = props;
-  const { setActionsNode } = useFormDialogActions();
+  const { setActionsNode } = useDialogActions();
 
   useEffect(() => {
     setActionsNode?.(children);
