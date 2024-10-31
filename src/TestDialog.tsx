@@ -7,7 +7,7 @@ import {
 } from "./shared/ui/FormDialog";
 import { Button, TextField } from "@mui/material";
 
-type Model = {
+export type Model = {
   name: string;
 };
 
@@ -41,6 +41,7 @@ function TestDialogContent() {
           type="button"
           variant="contained"
           color="inherit"
+          disabled={dialog.inProgress}
           onClick={dialog.cancel}
         >
           Отмена
@@ -49,13 +50,19 @@ function TestDialogContent() {
           type="button"
           variant="contained"
           color="primary"
+          disabled={dialog.inProgress}
           onClick={() => {
             dialog.submitData?.(getValues());
           }}
         >
           Метод submitData
         </Button>
-        <Button type="submit" variant="contained" color="primary">
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={dialog.inProgress}
+        >
           Форма
         </Button>
       </DialogActions>

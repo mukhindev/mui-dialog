@@ -1,9 +1,15 @@
 import { Button } from "@mui/material";
 import { useState } from "react";
-import TestDialog from "./TestDialog.tsx";
+import TestDialog, { Model } from "./TestDialog.tsx";
 
 function App() {
   const [isOpen, setIsOpen] = useState(true);
+
+  const handleSubmit = async (data: Model) => {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsOpen(false);
+    console.log(data);
+  };
 
   return (
     <>
@@ -11,7 +17,7 @@ function App() {
       <TestDialog
         open={isOpen}
         onClose={() => setIsOpen(false)}
-        onDataSubmit={(data) => console.log(data)}
+        onDataSubmit={handleSubmit}
       />
     </>
   );

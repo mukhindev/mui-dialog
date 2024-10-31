@@ -3,6 +3,7 @@ import {
   Dialog as MuiDialog,
   DialogProps as MuiDialogProps,
   IconButton,
+  LinearProgress,
 } from "@mui/material";
 import { ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import DialogBody from "./components/DialogBody";
@@ -80,6 +81,17 @@ export default function Dialog<T>(props: DialogProps<T>) {
       onClose={handleClose}
       {...dialogProps}
     >
+      {inProgress && (
+        <LinearProgress
+          sx={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "100%",
+          }}
+        />
+      )}
+
       <DialogProvider value={dialogContextValue}>
         {title && (
           <MuiDialogTitle
@@ -98,6 +110,7 @@ export default function Dialog<T>(props: DialogProps<T>) {
         {onClose && (
           <IconButton
             aria-label="Закрыть"
+            disabled={isInternalInProgress}
             sx={{
               position: "absolute",
               top: 12,
