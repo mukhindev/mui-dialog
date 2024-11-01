@@ -4,19 +4,20 @@ import {
   FormDialog,
   useDialog,
   FormDialogProps,
-} from "./shared/ui/FormDialog";
+} from "../lib/Dialog";
 import { Button, TextField } from "@mui/material";
 
-export type Model = {
+export type UserModel = {
   name: string;
 };
 
-export default function TestDialog(props: FormDialogProps<Model>) {
+export default function TestDialog(props: FormDialogProps<UserModel>) {
   const { ...formDialogProps } = props;
 
   return (
     <FormDialog
-      title="Тестовый диалог"
+      title="Dialog"
+      maxWidth="sm"
       formParams={{
         defaultValues: {
           name: "Sergey Mukhin",
@@ -30,12 +31,12 @@ export default function TestDialog(props: FormDialogProps<Model>) {
 }
 
 function TestDialogContent() {
-  const { register, getValues } = useFormContext<Model>();
-  const dialog = useDialog<Model>();
+  const { register, getValues } = useFormContext<UserModel>();
+  const dialog = useDialog<UserModel>();
 
   return (
     <>
-      <TextField {...register("name")} label="Имя" fullWidth />
+      <TextField {...register("name")} label="Name" fullWidth />
       <DialogActions>
         <Button
           type="button"
@@ -44,7 +45,7 @@ function TestDialogContent() {
           disabled={dialog.inProgress}
           onClick={dialog.cancel}
         >
-          Отмена
+          Cancel
         </Button>
         <Button
           type="button"
@@ -55,7 +56,7 @@ function TestDialogContent() {
             dialog.submitData?.(getValues());
           }}
         >
-          Метод submitData
+          SubmitData method
         </Button>
         <Button
           type="submit"
@@ -63,7 +64,7 @@ function TestDialogContent() {
           color="primary"
           disabled={dialog.inProgress}
         >
-          Форма
+          Submit form
         </Button>
       </DialogActions>
     </>

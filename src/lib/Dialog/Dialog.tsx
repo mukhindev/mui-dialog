@@ -10,7 +10,7 @@ import DialogBody from "./components/DialogBody";
 import { DialogProvider, DialogContextValue } from "./contexts/DialogContext";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
-export interface DialogProps<T>
+export interface DialogProps<T = unknown>
   extends Omit<MuiDialogProps, "title" | "onClose" | "children"> {
   /** Диалог является формой и должен реагировать на событие onSubmit */
   form?: boolean;
@@ -110,7 +110,7 @@ export default function Dialog<T>(props: DialogProps<T>) {
         {onClose && (
           <IconButton
             aria-label="Закрыть"
-            disabled={isInternalInProgress}
+            disabled={inProgress}
             sx={{
               position: "absolute",
               top: 12,
