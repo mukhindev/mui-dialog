@@ -1,3 +1,3 @@
-export { DialogActionsProvider } from "./DialogActionsProvider.tsx";
-export { useDialogActions } from "./useDialogActions.ts";
-export type { DialogActionsContextValue } from "./DialogActionsContextValue.ts";
+export { DialogActionsProvider } from "./DialogActionsProvider";
+export { useDialogActions } from "./useDialogActions";
+export type { DialogActionsContextValue } from "./DialogActionsContextValue";

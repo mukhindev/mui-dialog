@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 import { DialogProps } from "../../Dialog";
 
-export type DialogProps2 = Omit<DialogProps, "open">;
+export type StoredDialogProps = Omit<DialogProps, "open">;
 
 export type DialogState<T = unknown> = {
   isOpen: boolean;
-  dialogProps: DialogProps2;
+  dialogProps: StoredDialogProps;
 } & T;
 
 export type RenderDialogContent<T = unknown> = (
@@ -54,7 +54,7 @@ export class DialogStore {
     this.updateState({
       ...initialState,
       isOpen: true,
-      dialogProps: dialog as DialogProps2,
+      dialogProps: dialog as StoredDialogProps,
     });
   };
 

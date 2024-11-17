@@ -1,3 +1,3 @@
-export { DialogProvider } from "./DialogProvider.tsx";
-export { useDialog } from "./useDialog.ts";
-export type { DialogContextValue } from "./DialogContextValue.ts";
+export { DialogProvider } from "./DialogProvider";
+export { useDialog } from "./useDialog";
+export type { DialogContextValue } from "./DialogContextValue";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TestDialog, { UserModel } from "./TestDialog.tsx";
+import TestDialog, { UserModel } from "./TestDialog";
 import { Button } from "@mui/material";
 
 export default function DialogDemo() {

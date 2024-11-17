@@ -1,6 +1,6 @@
 import { Alert, Button, TextField } from "@mui/material";
-import { dialogStore, openDialog } from "./dialog.ts";
-import { DialogActions } from "../lib/Dialog";
+import { dialogStore, openDialog } from "./dialog";
+import { DialogActions } from "../lib";
 
 type UserModel = {
   name: string;

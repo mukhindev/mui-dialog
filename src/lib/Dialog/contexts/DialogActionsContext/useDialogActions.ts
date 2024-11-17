@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { DialogActionsContext } from "./DialogActionsContext.ts";
+import { DialogActionsContext } from "./DialogActionsContext";
 
 /** @private */
 export const useDialogActions = () => {

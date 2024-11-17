@@ -1,6 +1,6 @@
 import Dialog from "../Dialog";
 import { useSyncExternalStore } from "react";
-import { DialogState, DialogStore } from "./store/DialogStore.ts";
+import { DialogState, DialogStore } from "./store/DialogStore";
 
 interface DialogObserverProps {
   dialogStore: DialogStore;

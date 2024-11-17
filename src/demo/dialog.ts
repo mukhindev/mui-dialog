@@ -1,3 +1,3 @@
-import { createDialogStore } from "../lib/DialogObserver";
+import { createDialogStore } from "../lib";
 
 export const { dialogStore, openDialog } = createDialogStore();

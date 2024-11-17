@@ -1,1 +1,1 @@
-export { default } from "./DialogActions.tsx";
+export { default } from "./DialogActions";

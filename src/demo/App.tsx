@@ -1,8 +1,8 @@
-import DialogObserver from "../lib/DialogObserver";
-import { dialogStore } from "./dialog.ts";
-import DialogDemo from "./DialogDemo.tsx";
+import { DialogObserver } from "../lib";
+import { dialogStore } from "./dialog";
+import DialogDemo from "./DialogDemo";
 import { useEffect, useState } from "react";
-import DialogObserverDemo from "./DialogObserverDemo.tsx";
+import DialogObserverDemo from "./DialogObserverDemo";
 
 export default function App() {
   const [, setCount] = useState(0);

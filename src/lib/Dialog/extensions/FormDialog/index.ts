@@ -1,1 +1,1 @@
-export { default } from "./FormDialog.tsx";
+export { default } from "./FormDialog";

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import { DialogContext } from "./DialogContext.ts";
-import { DialogContextValue } from "./DialogContextValue.ts";
+import { DialogContext } from "./DialogContext";
+import { DialogContextValue } from "./DialogContextValue";
 
 interface DialogProviderProps<T> {
   children: ReactNode;

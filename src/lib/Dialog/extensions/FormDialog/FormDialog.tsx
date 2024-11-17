@@ -5,7 +5,7 @@ import {
   FormProvider,
   UseFormProps,
 } from "react-hook-form";
-import Dialog, { DialogProps } from "../../Dialog.tsx";
+import Dialog, { DialogProps } from "../../Dialog";
 import { ReactNode, useEffect, useState } from "react";
 import { DialogContextValue } from "../../contexts/DialogContext";
 
