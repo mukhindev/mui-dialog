@@ -21,20 +21,27 @@ export default function FormDialog<T extends FieldValues>(
     children,
     formParams,
     inProgress: isExternalInProgress = false,
+    disabled: isExternalDisabled = false,
     ...dialogProps
   } = props;
 
   const form = useForm<T>(formParams);
+
   const [isInternalInProgress, setIsInternalInProgress] = useState(isExternalInProgress ?? false); // prettier-ignore
   const inProgress = isInternalInProgress || isExternalInProgress;
 
+  const [isInternalDisabled, setIsInternalDisabled] = useState(isExternalDisabled ?? false); // prettier-ignore
+  const disabled = isInternalDisabled || isExternalInProgress;
+
   const onSubmit: SubmitHandler<T> = async (data) => {
     setIsInternalInProgress(true);
+    setIsInternalDisabled(true);
 
     try {
       await dialogProps.onDataSubmit?.(data);
     } finally {
       setIsInternalInProgress(false);
+      setIsInternalDisabled(false);
     }
   };
 
@@ -48,6 +55,7 @@ export default function FormDialog<T extends FieldValues>(
     <Dialog
       form
       inProgress={inProgress}
+      disabled={disabled}
       onSubmit={form.handleSubmit(onSubmit)}
       {...dialogProps}
     >

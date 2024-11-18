@@ -15,7 +15,10 @@ export interface DialogProps<T = unknown>
   /** Диалог является формой и должен реагировать на событие onSubmit */
   form?: boolean;
   title?: ReactNode;
+  /** В отличие от title не создаёт `<h>` контейнер */
+  header?: ReactNode;
   inProgress?: boolean;
+  disabled?: boolean;
   children?: ReactNode | ((dialog: DialogContextValue<T>) => ReactNode);
   /** Отправка данных из диалога */
   onDataSubmit?: (data: T) => Promise<void> | void;
@@ -27,7 +30,9 @@ export default function Dialog<T>(props: DialogProps<T>) {
   const {
     form,
     title,
+    header,
     inProgress: isExternalInProgress = false,
+    disabled: isExternalDisabled = false,
     children,
     PaperProps,
     onDataSubmit,
@@ -38,6 +43,9 @@ export default function Dialog<T>(props: DialogProps<T>) {
 
   const [isInternalInProgress, setIsInternalInProgress] = useState(isExternalInProgress ?? false); // prettier-ignore
   const inProgress = isInternalInProgress || isExternalInProgress;
+
+  const [isInternalDisabled, setIsInternalDisabled] = useState(isExternalDisabled ?? false); // prettier-ignore
+  const disabled = isInternalDisabled || isExternalDisabled;
 
   const onDataSubmitRef = useRef(onDataSubmit);
   onDataSubmitRef.current = onDataSubmit;
@@ -50,11 +58,13 @@ export default function Dialog<T>(props: DialogProps<T>) {
 
   const handleDataSubmit = useCallback(async (data: T) => {
     setIsInternalInProgress(true);
+    setIsInternalDisabled(true);
 
     try {
       await onDataSubmitRef.current?.(data);
     } finally {
       setIsInternalInProgress(false);
+      setIsInternalDisabled(false);
     }
   }, []);
 
@@ -66,8 +76,10 @@ export default function Dialog<T>(props: DialogProps<T>) {
       cancel: onCancelRef.current ?? onCloseRef.current,
       inProgress,
       setInProgress: setIsInternalInProgress,
+      disabled,
+      setDisabled: setIsInternalDisabled,
     };
-  }, [handleDataSubmit, inProgress]);
+  }, [disabled, handleDataSubmit, inProgress]);
 
   const handleClose = () => {
     onClose?.();
@@ -93,6 +105,7 @@ export default function Dialog<T>(props: DialogProps<T>) {
       )}
 
       <DialogProvider value={dialogContextValue}>
+        {header}
         {title && (
           <MuiDialogTitle
             sx={{
@@ -110,7 +123,7 @@ export default function Dialog<T>(props: DialogProps<T>) {
         {onClose && (
           <IconButton
             aria-label="Закрыть"
-            disabled={inProgress}
+            disabled={disabled}
             sx={{
               position: "absolute",
               top: 12,

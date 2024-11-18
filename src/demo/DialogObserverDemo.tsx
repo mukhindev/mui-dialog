@@ -27,6 +27,7 @@ export default function DialogObserverDemo() {
               // If you need to change nested states frequently, you can use the Immer library
               ...state.dialogProps,
               inProgress: true,
+              disabled: true,
             },
             isActionsDisabled: true,
           });
@@ -39,6 +40,7 @@ export default function DialogObserverDemo() {
             dialogProps: {
               ...state.dialogProps,
               inProgress: false,
+              disabled: false,
             },
             isActionsDisabled: false,
           });
