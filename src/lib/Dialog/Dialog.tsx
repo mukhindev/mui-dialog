@@ -17,8 +17,12 @@ export interface DialogProps<T = unknown>
   title?: ReactNode;
   /** В отличие от title не создаёт `<h>` контейнер */
   header?: ReactNode;
+  /** Показать что идёт процесс связанный с диалогом */
   inProgress?: boolean;
+  /** Заблокировать активные элементы диалога */
   disabled?: boolean;
+  /** Отметить что содержимое валидно (по-умолчанию true) */
+  valid?: boolean;
   children?: ReactNode | ((dialog: DialogContextValue<T>) => ReactNode);
   /** Отправка данных из диалога */
   onDataSubmit?: (data: T) => Promise<void> | void;
@@ -33,6 +37,7 @@ export default function Dialog<T>(props: DialogProps<T>) {
     header,
     inProgress: isExternalInProgress = false,
     disabled: isExternalDisabled = false,
+    valid: isExternalValid = true,
     children,
     PaperProps,
     onDataSubmit,
@@ -41,11 +46,14 @@ export default function Dialog<T>(props: DialogProps<T>) {
     ...dialogProps
   } = props;
 
-  const [isInternalInProgress, setIsInternalInProgress] = useState(isExternalInProgress ?? false); // prettier-ignore
+  const [isInternalInProgress, setIsInternalInProgress] = useState(isExternalInProgress); // prettier-ignore
   const inProgress = isInternalInProgress || isExternalInProgress;
 
-  const [isInternalDisabled, setIsInternalDisabled] = useState(isExternalDisabled ?? false); // prettier-ignore
+  const [isInternalDisabled, setIsInternalDisabled] = useState(isExternalDisabled); // prettier-ignore
   const disabled = isInternalDisabled || isExternalDisabled;
+
+  const [isInternalValid, setIsInternalValid] = useState(isExternalValid); // prettier-ignore
+  const valid = isInternalValid || isExternalValid;
 
   const onDataSubmitRef = useRef(onDataSubmit);
   onDataSubmitRef.current = onDataSubmit;
@@ -78,8 +86,10 @@ export default function Dialog<T>(props: DialogProps<T>) {
       setInProgress: setIsInternalInProgress,
       disabled,
       setDisabled: setIsInternalDisabled,
+      valid,
+      setValid: setIsInternalValid,
     };
-  }, [disabled, handleDataSubmit, inProgress]);
+  }, [disabled, handleDataSubmit, inProgress, valid]);
 
   const handleClose = () => {
     onClose?.();

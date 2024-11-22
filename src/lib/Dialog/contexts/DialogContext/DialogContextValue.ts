@@ -8,4 +8,6 @@ export type DialogContextValue<T = unknown> = {
   setInProgress: Dispatch<SetStateAction<boolean>>;
   disabled: boolean;
   setDisabled: Dispatch<SetStateAction<boolean>>;
+  valid: boolean;
+  setValid: Dispatch<SetStateAction<boolean>>;
 };
