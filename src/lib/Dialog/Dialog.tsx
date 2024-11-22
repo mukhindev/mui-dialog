@@ -53,7 +53,7 @@ export default function Dialog<T>(props: DialogProps<T>) {
   const disabled = isInternalDisabled || isExternalDisabled;
 
   const [isInternalValid, setIsInternalValid] = useState(isExternalValid); // prettier-ignore
-  const valid = isInternalValid || isExternalValid;
+  const valid = isInternalValid && isExternalValid;
 
   const onDataSubmitRef = useRef(onDataSubmit);
   onDataSubmitRef.current = onDataSubmit;
