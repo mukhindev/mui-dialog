@@ -41,6 +41,7 @@ export class DialogStore {
   };
 
   open = <T>(params: {
+    enabled: boolean;
     dialog: Partial<DialogProps<T>>;
     initialState: Omit<DialogState<T>, "isOpen" | "dialogProps">;
     renderContent: RenderDialogContent<T>;
@@ -67,7 +68,9 @@ export const createDialogStore = () => {
   const dialogStore = new DialogStore();
 
   const openDialog: DialogStore["open"] = (params) => {
-    dialogStore.open?.(params);
+    if (params.enabled ?? true) {
+      dialogStore.open?.(params);
+    }
   };
 
   return {
