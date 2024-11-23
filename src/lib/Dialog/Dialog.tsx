@@ -133,6 +133,7 @@ export default function Dialog<T>(props: DialogProps<T>) {
         {onClose && (
           <IconButton
             aria-label="Закрыть"
+            data-close
             disabled={disabled}
             sx={{
               position: "absolute",

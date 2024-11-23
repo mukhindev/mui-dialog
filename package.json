@@ -28,8 +28,7 @@
   "scripts": {
     "dev": "vite",
     "lint": "eslint src",
-    "build": "rimraf ./dist && npx tsc --project tsconfig.lib.json",
-    "publish": "npm publish --access public"
+    "build": "rimraf ./dist && npx tsc --project tsconfig.lib.json"
   },
   "peerDependencies": {
     "@emotion/react": "^11.13.3",
