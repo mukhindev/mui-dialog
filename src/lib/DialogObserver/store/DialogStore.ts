@@ -41,7 +41,7 @@ export class DialogStore {
   };
 
   open = <T>(params: {
-    enabled: boolean;
+    enabled?: boolean;
     dialog: Partial<DialogProps<T>>;
     initialState: Omit<DialogState<T>, "isOpen" | "dialogProps">;
     renderContent: RenderDialogContent<T>;
