@@ -55,33 +55,31 @@ export default function Dialog<T>(props: DialogProps<T>) {
   const [isInternalValid, setIsInternalValid] = useState(isExternalValid); // prettier-ignore
   const valid = isInternalValid && isExternalValid;
 
-  const onDataSubmitRef = useRef(onDataSubmit);
-  onDataSubmitRef.current = onDataSubmit;
+  const submitData = useStableCallback(onDataSubmit);
+  const close = useStableCallback(onClose);
+  // Если на Dialog не определён onCancel, cancel срабатывает как закрытие
+  const cancel = useStableCallback(onCancel ?? onClose);
 
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  const handleDataSubmit = useCallback(
+    async (data: T) => {
+      setIsInternalInProgress(true);
+      setIsInternalDisabled(true);
 
-  const onCancelRef = useRef(onCancel);
-  onCancelRef.current = onCancel;
-
-  const handleDataSubmit = useCallback(async (data: T) => {
-    setIsInternalInProgress(true);
-    setIsInternalDisabled(true);
-
-    try {
-      await onDataSubmitRef.current?.(data);
-    } finally {
-      setIsInternalInProgress(false);
-      setIsInternalDisabled(false);
-    }
-  }, []);
+      try {
+        await submitData?.(data);
+      } finally {
+        setIsInternalInProgress(false);
+        setIsInternalDisabled(false);
+      }
+    },
+    [submitData],
+  );
 
   const dialogContextValue = useMemo<DialogContextValue<T>>(() => {
     return {
       submitData: handleDataSubmit,
-      close: onCloseRef.current,
-      // Если на Dialog не определён onCancel, cancel срабатывает как закрытие
-      cancel: onCancelRef.current ?? onCloseRef.current,
+      close,
+      cancel,
       inProgress,
       setInProgress: setIsInternalInProgress,
       disabled,
@@ -89,7 +87,7 @@ export default function Dialog<T>(props: DialogProps<T>) {
       valid,
       setValid: setIsInternalValid,
     };
-  }, [disabled, handleDataSubmit, inProgress, valid]);
+  }, [cancel, close, disabled, handleDataSubmit, inProgress, valid]);
 
   const handleClose = () => {
     onClose?.();
@@ -153,4 +151,19 @@ export default function Dialog<T>(props: DialogProps<T>) {
       </DialogProvider>
     </MuiDialog>
   );
+}
+
+/** Стабильная ссылка на функцию, без объявления зависимостей */
+function useStableCallback<Args extends unknown[], R>(
+  callback?: ((...args: Args) => R) | undefined,
+): (...args: Args) => R | undefined {
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+
+  return useCallback((...args: Args): R | undefined => {
+    if (callbackRef.current) {
+      return callbackRef.current(...args);
+    }
+    return undefined;
+  }, []);
 }
