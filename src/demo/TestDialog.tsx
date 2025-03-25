@@ -1,6 +1,7 @@
 import { useFormContext } from "react-hook-form";
-import { DialogActions, FormDialog, useDialog, FormDialogProps } from "../lib";
+import { DialogActions, useDialog } from "../lib";
 import { Button, TextField } from "@mui/material";
+import FormDialog, { FormDialogProps } from "../lib/extensions/FormDialog";
 
 export type UserModel = {
   name: string;

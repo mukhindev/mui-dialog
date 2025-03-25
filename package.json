@@ -23,6 +23,9 @@
   "exports": {
     ".": {
       "import": "./dist/index.js"
+    },
+    "./extensions": {
+      "import": "./dist/extensions/index.js"
     }
   },
   "scripts": {

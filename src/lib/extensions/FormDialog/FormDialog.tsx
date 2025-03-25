@@ -5,9 +5,9 @@ import {
   FormProvider,
   UseFormProps,
 } from "react-hook-form";
-import Dialog, { DialogProps } from "../../Dialog";
+import Dialog, { DialogProps } from "../../Dialog/Dialog";
 import { ReactNode, useEffect, useState } from "react";
-import { DialogContextValue } from "../../contexts/DialogContext";
+import { DialogContextValue } from "../../Dialog/contexts/DialogContext";
 
 export interface FormDialogProps<T extends FieldValues> extends DialogProps<T> {
   children?: ReactNode | ((dialog: DialogContextValue<T>) => ReactNode);
