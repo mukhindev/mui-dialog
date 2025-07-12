@@ -9,13 +9,14 @@ import Dialog, { DialogProps } from "../../Dialog/Dialog";
 import { ReactNode, useEffect, useState } from "react";
 import { DialogContextValue } from "../../Dialog/contexts/DialogContext";
 
-export interface FormDialogProps<T extends FieldValues> extends DialogProps<T> {
+export interface HookFormDialogProps<T extends FieldValues>
+  extends DialogProps<T> {
   children?: ReactNode | ((dialog: DialogContextValue<T>) => ReactNode);
   formParams?: UseFormProps<T>;
 }
 
-export default function FormDialog<T extends FieldValues>(
-  props: FormDialogProps<T>,
+export default function HookFormDialog<T extends FieldValues>(
+  props: HookFormDialogProps<T>,
 ) {
   const {
     children,

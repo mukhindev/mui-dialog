@@ -1,15 +1,16 @@
 import { useState } from "react";
-import TestDialog, { UserModel } from "./TestDialog";
 import { Button } from "@mui/material";
+import { UserModel } from "./UserModel.ts";
+import TestDialogHookForm from "./TestDialogHookForm.tsx";
 
-export default function DialogDemo() {
+export default function DialogHookFormDemo() {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (data: UserModel) => {
+    console.log(data);
     // Delay imitation
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsOpen(false);
-    console.log(data);
   };
 
   const handleDialogOpen = () => {
@@ -22,8 +23,10 @@ export default function DialogDemo() {
 
   return (
     <div>
-      <Button onClick={handleDialogOpen}>Open Dialog</Button>
-      <TestDialog
+      <Button onClick={handleDialogOpen}>
+        Open Dialog with use-react-hook
+      </Button>
+      <TestDialogHookForm
         open={isOpen}
         onClose={handleDialogClose}
         onDataSubmit={handleSubmit}

@@ -5,10 +5,18 @@ import {
   IconButton,
   LinearProgress,
 } from "@mui/material";
-import { ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import {
+  FormEvent,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import DialogBody from "./components/DialogBody";
 import { DialogProvider, DialogContextValue } from "./contexts/DialogContext";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import { AsyncSubmitCallback } from "./types/AsyncSubmitCallback";
 
 export interface DialogProps<T = unknown>
   extends Omit<MuiDialogProps, "title" | "onClose" | "children"> {
@@ -40,12 +48,13 @@ export default function Dialog<T>(props: DialogProps<T>) {
     valid: isExternalValid = true,
     children,
     PaperProps,
+    onSubmit,
     onDataSubmit,
     onClose,
     onCancel,
     ...dialogProps
   } = props;
-
+  /** v1 */
   const [isInternalInProgress, setIsInternalInProgress] = useState(isExternalInProgress); // prettier-ignore
   const inProgress = isInternalInProgress || isExternalInProgress;
 
@@ -75,6 +84,27 @@ export default function Dialog<T>(props: DialogProps<T>) {
     [submitData],
   );
 
+  /** v2 */
+  const submitHandlerRef = useRef<AsyncSubmitCallback>();
+
+  const handleSubmit = async (evt: FormEvent<HTMLDivElement>) => {
+    evt.preventDefault();
+    setIsInternalInProgress(true);
+    setIsInternalDisabled(true);
+
+    try {
+      onSubmit?.(evt);
+      await submitHandlerRef.current?.(evt);
+    } finally {
+      setIsInternalInProgress(false);
+      setIsInternalDisabled(false);
+    }
+  };
+
+  const registerOnSubmit = useCallback((handler: AsyncSubmitCallback) => {
+    submitHandlerRef.current = handler;
+  }, []);
+
   const dialogContextValue = useMemo<DialogContextValue<T>>(() => {
     return {
       submitData: handleDataSubmit,
@@ -86,8 +116,17 @@ export default function Dialog<T>(props: DialogProps<T>) {
       setDisabled: setIsInternalDisabled,
       valid,
       setValid: setIsInternalValid,
+      registerOnSubmit,
     };
-  }, [cancel, close, disabled, handleDataSubmit, inProgress, valid]);
+  }, [
+    cancel,
+    close,
+    disabled,
+    handleDataSubmit,
+    inProgress,
+    registerOnSubmit,
+    valid,
+  ]);
 
   const handleClose = () => {
     onClose?.();
@@ -99,6 +138,7 @@ export default function Dialog<T>(props: DialogProps<T>) {
       maxWidth="xs"
       PaperProps={form ? { component: "form", ...PaperProps } : undefined}
       onClose={handleClose}
+      onSubmit={handleSubmit}
       {...dialogProps}
     >
       {inProgress && (

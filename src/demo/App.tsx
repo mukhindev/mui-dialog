@@ -1,9 +1,11 @@
 import { DialogObserver } from "../lib";
 import { dialogStore } from "./dialog";
-import DialogDemo from "./DialogDemo";
+import DialogHookFormDemo from "./DialogHookFormDemo.tsx";
 import { useEffect, useState } from "react";
 import DialogObserverDemo from "./DialogObserverDemo";
 import DialogWithAsyncData from "./DialogWithAsyncData.tsx";
+import DialogSubmitDataDemo from "./DialogSubmitDataDemo.tsx";
+import DialogNativeSubmitDemo from "./DialogNativeSubmitDemo.tsx";
 
 export default function App() {
   const [, setCount] = useState(0);
@@ -16,7 +18,9 @@ export default function App() {
   return (
     <div>
       <DialogObserver dialogStore={dialogStore} />
-      <DialogDemo />
+      <DialogSubmitDataDemo />
+      <DialogNativeSubmitDemo />
+      <DialogHookFormDemo />
       <DialogObserverDemo />
       <DialogWithAsyncData />
     </div>
