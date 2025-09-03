@@ -1,12 +1,12 @@
-import { ReactNode, useEffect } from "react";
-import { useDialogActions } from "../../contexts/DialogActionsContext";
+import { ReactNode } from "react";
+import { DialogActionsTeleport } from "../../teleports/DialogActionsTeleport";
 
 interface DialogActionsProps {
   children: ReactNode;
 }
 
 /**
- * Компонент для `<Dialog />`, который, c любого уровня вложенности,
+ * Компонент для `<Dialog>`, который, c любого уровня вложенности,
  * перенаправит своё содержимое на панель действий.
  *
  * ```TypeScript
@@ -35,11 +35,6 @@ interface DialogActionsProps {
  * */
 export default function DialogActions(props: DialogActionsProps) {
   const { children } = props;
-  const { setActionsNode } = useDialogActions();
 
-  useEffect(() => {
-    setActionsNode?.(children);
-  }, [children, setActionsNode]);
-
-  return null;
+  return <DialogActionsTeleport.From>{children}</DialogActionsTeleport.From>;
 }

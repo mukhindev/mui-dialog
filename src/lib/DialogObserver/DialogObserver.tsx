@@ -14,7 +14,7 @@ export default function DialogObserver(props: DialogObserverProps) {
 
   return (
     <Dialog
-      open={state.isOpen}
+      open={state.open}
       onClose={() => dialogStore.close()}
       {...state.dialogProps}
     >

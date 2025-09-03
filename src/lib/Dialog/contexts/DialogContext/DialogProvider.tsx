@@ -2,12 +2,12 @@ import { ReactNode } from "react";
 import { DialogContext } from "./DialogContext";
 import { DialogContextValue } from "./DialogContextValue";
 
-interface DialogProviderProps<T> {
+interface DialogProviderProps {
   children: ReactNode;
-  value: DialogContextValue<T>;
+  value: DialogContextValue;
 }
 
-export function DialogProvider<T>(props: DialogProviderProps<T>) {
+export function DialogProvider(props: DialogProviderProps) {
   const { children, value } = props;
 
   return (

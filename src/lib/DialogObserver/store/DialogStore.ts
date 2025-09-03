@@ -4,7 +4,7 @@ import { DialogProps } from "../../Dialog";
 export type StoredDialogProps = Omit<DialogProps, "open">;
 
 export type DialogState<T = unknown> = {
-  isOpen: boolean;
+  open: boolean;
   dialogProps: StoredDialogProps;
 } & T;
 
@@ -15,7 +15,7 @@ export type RenderDialogContent<T = unknown> = (
 
 export class DialogStore {
   private state: DialogState = {
-    isOpen: false,
+    open: false,
     dialogProps: {},
   };
 
@@ -41,8 +41,8 @@ export class DialogStore {
   };
 
   open = <T>(params: {
-    dialog: Partial<DialogProps<T>>;
-    initialState: Omit<DialogState<T>, "isOpen" | "dialogProps">;
+    dialog: Partial<DialogProps>;
+    initialState: Omit<DialogState<T>, "open" | "dialogProps">;
     renderContent: RenderDialogContent<T>;
   }) => {
     const { dialog, initialState, renderContent } = params;
@@ -53,13 +53,13 @@ export class DialogStore {
 
     this.updateState({
       ...initialState,
-      isOpen: true,
+      open: true,
       dialogProps: dialog as StoredDialogProps,
     });
   };
 
   close = () => {
-    this.updateState({ isOpen: false });
+    this.updateState({ open: false });
   };
 }
 

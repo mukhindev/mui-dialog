@@ -1,209 +1,174 @@
 import {
-  DialogTitle as MuiDialogTitle,
   Dialog as MuiDialog,
   DialogProps as MuiDialogProps,
-  IconButton,
-  LinearProgress,
 } from "@mui/material";
-import {
-  FormEvent,
-  ReactNode,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import DialogBody from "./components/DialogBody";
+import { FormEvent, ReactNode, useCallback, useMemo, useRef } from "react";
+import DialogComposer from "./components/DialogComposer";
 import { DialogProvider, DialogContextValue } from "./contexts/DialogContext";
-import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { AsyncSubmitCallback } from "./types/AsyncSubmitCallback";
+import { OnCloseWithReason } from "./types/OnCloseWithReason.ts";
 
-export interface DialogProps<T = unknown>
-  extends Omit<MuiDialogProps, "title" | "onClose" | "children"> {
-  /** Диалог является формой и должен реагировать на событие onSubmit */
-  form?: boolean;
+type MuiDialogPropsWithExtentsOnClose = Omit<
+  MuiDialogProps,
+  "title" | "onClose" | "children"
+> & { onClose?: OnCloseWithReason };
+
+export interface DialogProps extends MuiDialogPropsWithExtentsOnClose {
+  /**
+   * Заголовок в шапке по-умолчанию. Шапка по умолчанию может быть переопределена
+   * через <DialogHeader> в контексте <Dialog>.
+   * */
   title?: ReactNode;
-  /** В отличие от title не создаёт `<h>` контейнер */
-  header?: ReactNode;
-  /** Показать что идёт процесс связанный с диалогом */
-  inProgress?: boolean;
-  /** Заблокировать активные элементы диалога */
-  disabled?: boolean;
-  /** Отметить что содержимое валидно (по-умолчанию true) */
-  valid?: boolean;
-  children?: ReactNode | ((dialog: DialogContextValue<T>) => ReactNode);
-  /** Отправка данных из диалога */
-  onDataSubmit?: (data: T) => Promise<void> | void;
-  onClose?: () => Promise<void> | void;
-  onCancel?: () => Promise<void> | void;
+  /** Превратить обёртку над содержимым диалога в <form> элемент */
+  form?: true;
+  /** Не использовать валидацию на форме (когда используется для props.form) */
+  noValidate?: boolean;
+  /** Запретить клик вне диалога (который в свою очередь закрывает диалог) */
+  disableBackdropClick?: boolean;
+  children?: ReactNode;
 }
 
-export default function Dialog<T>(props: DialogProps<T>) {
+/**
+ * Диалог (расширение для MUI Dialog), помогающий реализовать подход,
+ * когда содержимое диалога монтируется только в момент открытия.
+ *
+ * Доступ к управлению диалогом при этом осуществляется через контекст,
+ * доступный через хук `useDialog()`.
+ *
+ * Также позволяет управлять шапкой и объявлять панель действий диалога
+ * с любой вложенности компонентов.
+ *
+ * ```TypeScript
+ * // Сам диалог
+ * export default function TestDialog(props: DialogProps) {
+ *   const { ...dialogProps } = props;
+ *
+ *   return (
+ *     // Сообщаем, что наш диалог это форма (будет обёрнуто в <form> содержимое диалога)
+ *     <Dialog form {...dialogProps}>
+ *       <Test />
+ *     </Dialog>
+ *   );
+ * }
+ *
+ * // Содержимое диалога (монтируется, когда диалог открыт)
+ * function Test() {
+ *   // Управление диалогом
+ *   const { cancel, close, registerOnSubmit } = useDialog();
+ *   const [inProgress, setInProgress] = useState(false);
+ *
+ *   const handleSubmit = useCallback(async () => {
+ *     setInProgress(true);
+ *     // Что-то выполняем с await ...
+ *     setInProgress(false);
+ *     // Закрываем диалог
+ *     close();
+ *   }, [close]);
+ *
+ *   // Регистрируем, что будет при событии submit на форме
+ *   useEffect(() => {
+ *     registerOnSubmit(handleSubmit);
+ *   }, [handleSubmit, registerOnSubmit]);
+ *
+ *   return (
+ *     <>
+ *       // Хоть мы и определяем шапку диалогу в теле, на самом деле она отобразится в нужном месте в DOM
+ *       <DialogHeader title="TestDialog" />
+ *       // Остальное выведется в тело диалога
+ *       Что-то в диалоге
+ *       // Хоть мы и определяем действия диалога в теле, на самом деле они отобразятся в нужном месте в DOM
+ *       <DialogActions>
+ *         <Button type="button" disabled={inProgress} onClick={cancel}>
+ *           Cancel
+ *         </Button>
+ *         <Button type="submit" disabled={inProgress}>
+ *           Submit
+ *         </Button>
+ *       </DialogActions>
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * Другие примеры смотрите в папке src/demo библиотеки
+ *
+ * */
+export default function Dialog(props: DialogProps) {
   const {
-    form,
     title,
-    header,
-    inProgress: isExternalInProgress = false,
-    disabled: isExternalDisabled = false,
-    valid: isExternalValid = true,
+    form,
+    noValidate,
+    disableBackdropClick,
     children,
-    PaperProps,
     onSubmit,
-    onDataSubmit,
     onClose,
-    onCancel,
+    PaperProps,
     ...dialogProps
   } = props;
-  /** v1 */
-  const [isInternalInProgress, setIsInternalInProgress] = useState(isExternalInProgress); // prettier-ignore
-  const inProgress = isInternalInProgress || isExternalInProgress;
 
-  const [isInternalDisabled, setIsInternalDisabled] = useState(isExternalDisabled); // prettier-ignore
-  const disabled = isInternalDisabled || isExternalDisabled;
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
 
-  const [isInternalValid, setIsInternalValid] = useState(isExternalValid); // prettier-ignore
-  const valid = isInternalValid && isExternalValid;
-
-  const submitData = useStableCallback(onDataSubmit);
-  const close = useStableCallback(onClose);
-  // Если на Dialog не определён onCancel, cancel срабатывает как закрытие
-  const cancel = useStableCallback(onCancel ?? onClose);
-
-  const handleDataSubmit = useCallback(
-    async (data: T) => {
-      setIsInternalInProgress(true);
-      setIsInternalDisabled(true);
-
-      try {
-        await submitData?.(data);
-      } finally {
-        setIsInternalInProgress(false);
-        setIsInternalDisabled(false);
-      }
-    },
-    [submitData],
-  );
-
-  /** v2 */
   const submitHandlerRef = useRef<AsyncSubmitCallback>();
 
   const handleSubmit = async (evt: FormEvent<HTMLDivElement>) => {
+    // preventDefault() делаем внутри, так как в 99,99% процентах, он нужен
     evt.preventDefault();
-    setIsInternalInProgress(true);
-    setIsInternalDisabled(true);
-
-    try {
-      onSubmit?.(evt);
-      await submitHandlerRef.current?.(evt);
-    } finally {
-      setIsInternalInProgress(false);
-      setIsInternalDisabled(false);
-    }
+    onSubmit?.(evt);
+    await submitHandlerRef.current?.(evt);
   };
 
   const registerOnSubmit = useCallback((handler: AsyncSubmitCallback) => {
     submitHandlerRef.current = handler;
   }, []);
 
-  const dialogContextValue = useMemo<DialogContextValue<T>>(() => {
+  const dialogContextValue = useMemo<DialogContextValue>(() => {
     return {
-      submitData: handleDataSubmit,
-      close,
-      cancel,
-      inProgress,
-      setInProgress: setIsInternalInProgress,
-      disabled,
-      setDisabled: setIsInternalDisabled,
-      valid,
-      setValid: setIsInternalValid,
+      close: () => closeRef.current?.({}, "closeEvent"),
+      cancel: () => closeRef.current?.({}, "cancelEvent"),
       registerOnSubmit,
     };
-  }, [
-    cancel,
-    close,
-    disabled,
-    handleDataSubmit,
-    inProgress,
-    registerOnSubmit,
-    valid,
-  ]);
+  }, [registerOnSubmit]);
 
-  const handleClose = () => {
-    onClose?.();
+  const handleDefaultMuiDialogClose: OnCloseWithReason = (...arg) => {
+    // Позволить запрещать закрытие диалога по клику снаружи
+    if (disableBackdropClick) {
+      return;
+    }
+
+    onClose?.(...arg);
   };
 
   return (
     <MuiDialog
       fullWidth
       maxWidth="xs"
-      PaperProps={form ? { component: "form", ...PaperProps } : undefined}
-      onClose={handleClose}
       onSubmit={handleSubmit}
+      onClose={handleDefaultMuiDialogClose}
+      TransitionProps={{
+        // Закрывать мгновенно из-за проблемы в Chrome: Blocked aria-hidden on an element because its descendant retained focus
+        exit: false,
+      }}
+      PaperProps={
+        form
+          ? {
+              // Превращаем обёртку над содержимым диалога в форму
+              component: "form",
+              noValidate,
+              ...PaperProps,
+            }
+          : PaperProps
+      }
       {...dialogProps}
     >
-      {inProgress && (
-        <LinearProgress
-          sx={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            width: "100%",
-          }}
-        />
-      )}
-
       <DialogProvider value={dialogContextValue}>
-        {header}
-        {title && (
-          <MuiDialogTitle
-            sx={{
-              p: 2,
-              // Зарезервировать отступ для кнопки закрыть
-              pr: onClose ? 7 : undefined,
-              "&+.MuiDialogContent-root": {
-                pt: 2,
-              },
-            }}
-          >
-            {title}
-          </MuiDialogTitle>
-        )}
-        {onClose && (
-          <IconButton
-            aria-label="Закрыть"
-            data-close
-            disabled={disabled}
-            sx={{
-              position: "absolute",
-              top: 12,
-              right: 12,
-            }}
-            onClick={handleClose}
-          >
-            <CloseOutlinedIcon />
-          </IconButton>
-        )}
-        <DialogBody>
-          {typeof children === "function"
-            ? children(dialogContextValue)
-            : children}
-        </DialogBody>
+        <DialogComposer
+          title={title}
+          onClose={() => closeRef.current?.({}, "closeEvent")}
+        >
+          {children}
+        </DialogComposer>
       </DialogProvider>
     </MuiDialog>
   );
-}
-
-/** Стабильная ссылка на функцию, без объявления зависимостей */
-function useStableCallback<Args extends unknown[], R>(
-  callback?: ((...args: Args) => R) | undefined,
-): (...args: Args) => R | undefined {
-  const callbackRef = useRef(callback);
-  callbackRef.current = callback;
-
-  return useCallback((...args: Args): R | undefined => {
-    if (callbackRef.current) {
-      return callbackRef.current(...args);
-    }
-    return undefined;
-  }, []);
 }

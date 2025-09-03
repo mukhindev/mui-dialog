@@ -1,8 +1,12 @@
 import { useContext } from "react";
 import { DialogContext } from "./DialogContext";
-import { DialogContextValue } from "./DialogContextValue";
 
-/** @private */
-export const useDialog = <T>() => {
-  return useContext(DialogContext) as DialogContextValue<T>;
+export const useDialog = () => {
+  const contextValue = useContext(DialogContext);
+
+  if (!contextValue) {
+    throw new Error("useDialog must be used within Dialog");
+  }
+
+  return contextValue;
 };

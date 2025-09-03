@@ -1,15 +1,15 @@
 import { Alert, Button, TextField } from "@mui/material";
 import { dialogStore, openDialog } from "./dialog";
-import { DialogActions } from "../lib";
+import { DialogActions, DialogHeader } from "@mukhindev/mui-dialog";
 
 type UserModel = {
   name: string;
 };
 
-export default function DialogObserverDemo() {
+export default function TestObserverDialogDemo() {
   const handleDialogObserverOpen = () => {
     // Open dialog. Extend dialog state type
-    openDialog<UserModel & { isActionsDisabled: boolean }>({
+    openDialog<UserModel & { inProgress: boolean }>({
       // Define dialog props
       dialog: {
         title: "DialogObserver",
@@ -17,19 +17,13 @@ export default function DialogObserverDemo() {
       // Set initial dialog state
       initialState: {
         name: "Sergey Mukhin",
-        isActionsDisabled: false,
+        inProgress: false,
       },
       // Render dialog content. Space from the header to the bottom of the dialog
       renderContent: (state, updateState) => {
         const handleSubmit = async (data: UserModel) => {
           updateState({
-            dialogProps: {
-              // If you need to change nested states frequently, you can use the Immer library
-              ...state.dialogProps,
-              inProgress: true,
-              disabled: true,
-            },
-            isActionsDisabled: true,
+            inProgress: true,
           });
 
           // Delay imitation
@@ -37,22 +31,19 @@ export default function DialogObserverDemo() {
           console.log(data);
 
           updateState({
-            dialogProps: {
-              ...state.dialogProps,
-              inProgress: false,
-              disabled: false,
-            },
-            isActionsDisabled: false,
+            inProgress: false,
           });
 
           dialogStore.close();
         };
 
-        const inProgress =
-          state.dialogProps.inProgress || state.isActionsDisabled;
-
         return (
           <>
+            <DialogHeader
+              title={state.dialogProps.title}
+              inProgress={state.inProgress}
+              disableClose={state.inProgress}
+            />
             <Alert severity="info">
               The state of this dialog is not related to the parent component,
               which reduces the number of renders.
@@ -76,7 +67,7 @@ export default function DialogObserverDemo() {
               <Button
                 variant="contained"
                 color="inherit"
-                disabled={inProgress}
+                disabled={state.inProgress}
                 onClick={() => dialogStore.close()}
               >
                 Cancel
@@ -84,7 +75,7 @@ export default function DialogObserverDemo() {
               <Button
                 variant="contained"
                 color="primary"
-                disabled={inProgress}
+                disabled={state.inProgress}
                 onClick={() => handleSubmit({ name: state.name })}
               >
                 Apply

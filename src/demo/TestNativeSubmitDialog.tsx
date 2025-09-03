@@ -1,28 +1,40 @@
-import { Dialog, DialogActions, DialogProps, useDialog } from "../lib";
+import {
+  Dialog,
+  DialogActions,
+  DialogHeader,
+  DialogProps,
+  useDialog,
+} from "@mukhindev/mui-dialog";
 import { Button, TextField } from "@mui/material";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
-export default function TestDialogNativeSubmit(props: DialogProps) {
+export default function TestNativeSubmitDialog(props: DialogProps) {
   const { ...formDialogProps } = props;
 
   return (
     <Dialog form title="Dialog" maxWidth="sm" {...formDialogProps}>
-      <DialogContent />
+      <TestNativeSubmit />
     </Dialog>
   );
 }
 
-function DialogContent() {
+function TestNativeSubmit() {
   const [name, setName] = useState("Sergey Mukhin");
-  const { cancel, close, inProgress, registerOnSubmit } = useDialog();
+  const { cancel, close, registerOnSubmit } = useDialog();
+
+  const [inProgress, setInProgress] = useState(false);
 
   const handleSubmit = useCallback(
     async (evt: FormEvent) => {
-      console.log("Internal handleSubmit:", evt);
-      console.log({ name });
+      setInProgress(true);
+      console.log("TestNativeSubmitDialogDemo/handleSubmit/internalEvent", evt);
+      console.log("TestNativeSubmitDialogDemo/handleSubmit/internalData", {
+        name,
+      });
       // Delay imitation
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      close?.();
+      setInProgress(false);
+      close();
     },
     [name, close],
   );
@@ -33,6 +45,7 @@ function DialogContent() {
 
   return (
     <>
+      <DialogHeader title="TestNativeSubmit" inProgress={inProgress} />
       <TextField
         name="name"
         label="Name"

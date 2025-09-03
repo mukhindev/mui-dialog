@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Dialog, DialogActions, useDialog } from "../lib";
-import { Button } from "@mui/material";
+import { Dialog, DialogProps, useDialog } from "@mukhindev/mui-dialog";
+import { LinearProgress } from "@mui/material";
 
 type Todo = {
   userId: number;
@@ -9,25 +9,21 @@ type Todo = {
   completed: boolean;
 };
 
-export default function DialogWithAsyncData() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function TestAsyncDataDialog(props: DialogProps) {
+  const { ...dialogProps } = props;
 
   return (
-    <>
-      <Button onClick={() => setIsOpen(true)}>
-        Open Dialog with async data
-      </Button>
-      <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
-        <AsyncData />
-      </Dialog>
-    </>
+    <Dialog {...dialogProps}>
+      <TestAsyncData />
+    </Dialog>
   );
 }
 
-function AsyncData() {
-  const { setInProgress, disabled, close, cancel } = useDialog();
+function TestAsyncData() {
+  const { close } = useDialog();
 
   const [todo, setTodo] = useState<Todo | null>(null);
+  const [inProgress, setInProgress] = useState(false);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -58,20 +54,17 @@ function AsyncData() {
 
   return (
     <>
+      {inProgress && (
+        <LinearProgress
+          sx={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "100%",
+          }}
+        />
+      )}
       <pre>{JSON.stringify(todo, null, 2)}</pre>
-      <DialogActions>
-        <Button
-          variant="contained"
-          color="inherit"
-          disabled={disabled}
-          onClick={cancel}
-        >
-          Отмена
-        </Button>
-        <Button variant="contained" color="primary" disabled={disabled}>
-          Сохранить
-        </Button>
-      </DialogActions>
     </>
   );
 }
