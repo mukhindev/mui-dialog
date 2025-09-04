@@ -4,7 +4,7 @@ import {
   LinearProgress,
 } from "@mui/material";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import { DialogHeaderProps } from "./types.ts";
+import { DialogHeaderProps } from "./types";
 import { useDialog } from "../../../../contexts/DialogContext";
 
 export default function DefaultDialogHeader(props: DialogHeaderProps) {

@@ -6,7 +6,7 @@ import { FormEvent, ReactNode, useCallback, useMemo, useRef } from "react";
 import DialogComposer from "./components/DialogComposer";
 import { DialogProvider, DialogContextValue } from "./contexts/DialogContext";
 import { AsyncSubmitCallback } from "./types/AsyncSubmitCallback";
-import { OnCloseWithReason } from "./types/OnCloseWithReason.ts";
+import { OnCloseWithReason } from "./types/OnCloseWithReason";
 
 type MuiDialogPropsWithExtentsOnClose = Omit<
   MuiDialogProps,

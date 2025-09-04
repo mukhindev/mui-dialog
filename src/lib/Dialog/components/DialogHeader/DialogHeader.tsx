@@ -1,6 +1,6 @@
 import DefaultDialogHeader from "./components/DefaultDialogHeader";
 import { DialogHeaderTeleport } from "../../teleports/DialogHeaderTeleport";
-import { DialogHeaderProps } from "./components/DefaultDialogHeader/types.ts";
+import { DialogHeaderProps } from "./components/DefaultDialogHeader/types";
 import { ReactNode } from "react";
 
 /**

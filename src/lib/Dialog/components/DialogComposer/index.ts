@@ -1,1 +1,1 @@
-export { default } from "./DialogComposer.tsx";
+export { default } from "./DialogComposer";

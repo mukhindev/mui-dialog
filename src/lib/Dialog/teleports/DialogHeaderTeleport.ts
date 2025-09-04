@@ -1,3 +1,3 @@
-import { createTeleport } from "../../utils/createTeleport.tsx";
+import { createTeleport } from "../../utils/createTeleport";
 
 export const DialogHeaderTeleport = createTeleport();

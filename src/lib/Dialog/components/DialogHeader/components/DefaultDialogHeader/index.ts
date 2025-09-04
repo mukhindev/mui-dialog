@@ -1,1 +1,1 @@
-export { default } from "./DefaultDialogHeader.tsx";
+export { default } from "./DefaultDialogHeader";
