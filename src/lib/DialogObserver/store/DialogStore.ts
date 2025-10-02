@@ -44,10 +44,12 @@ export class DialogStore {
     dialog: Partial<DialogProps>;
     initialState: Omit<DialogState<T>, "open" | "dialogProps">;
     renderContent: RenderDialogContent<T>;
+    onClose?: () => void;
   }) => {
-    const { dialog, initialState, renderContent } = params;
+    const { dialog, initialState, renderContent, onClose } = params;
 
     this.renderContent = renderContent as RenderDialogContent;
+    this.onClose = onClose;
 
     this.state = { ...this.initialState };
 
@@ -59,8 +61,11 @@ export class DialogStore {
   };
 
   close = () => {
+    this.onClose?.();
     this.updateState({ open: false });
   };
+
+  onClose?: () => void = undefined;
 }
 
 export const createDialogStore = () => {
